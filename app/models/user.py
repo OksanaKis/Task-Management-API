@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -10,4 +11,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    tasks = relationship("Task", back_populates="owner", cascade="all, delete-orphan")
+    tasks: Mapped[list["Task"]] = relationship(
+        "Task",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )
