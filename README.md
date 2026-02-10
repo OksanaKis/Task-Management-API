@@ -1,317 +1,217 @@
-Task Management API
+# Task Management API
 
-Backend-first REST API for managing tasks, built with FastAPI and PostgreSQL.
+Backend-first REST API for managing tasks, built with **FastAPI** and **PostgreSQL**.
 
 This project is developed incrementally as a multi-day backend-focused exercise.
-Each day introduces new architectural concepts and production-ready features.
+Each part introduces new architectural concepts and production-ready features.
 
-Tech Stack
+---
 
-FastAPI
+## Tech Stack
 
-PostgreSQL
+- **FastAPI**
+- **PostgreSQL**
+- **SQLAlchemy 2.0**
+- **Alembic** (database migrations)
+- **Docker / docker-compose**
+- **Pydantic**
+- **JWT** (OAuth2 Password Flow)
+- **pytest**
 
-SQLAlchemy 2.0
+---
 
-Alembic (database migrations)
+## Project Structure
 
-Docker / docker-compose
+TASK-MANAGEMENT-API/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── db/
+│   │   ├── __init__.py
+│   │   ├── session.py
+│   │   ├── base.py
+│   │   ├── base_models.py
+│   │   └── deps.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── task.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── task.py
+│   │   └── auth_schemas.py
+│   └── router/
+│       ├── auth.py
+│       ├── tasks.py
+│       └── deps_auth.py
+├── tests/
+│   ├── conftest.py
+│   ├── test_auth.py
+│   └── test_tasks.py
+├── alembic/
+│   ├── versions/
+│   └── env.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── pytest.ini
+├── .env
+├── .env.example
+├── alembic.ini
+└── README.md
 
-Pydantic
+---
 
-JWT (OAuth2 Password Flow)
+## Requirements
 
-pytest
+- Docker + Docker Compose
+- Python 3.11+ (required only for running tests locally)
 
-Project Structure (Current)
+## Environment Variables
 
-app/
-  main.py
-  init.py
-  core/
-    config.py
-    security.py
-  db/
-    session.py
-    base.py
-    base_models.py
-    deps.py
-  models/
-    user.py
-    task.py
-  schemas/
-    user.py
-    task.py
-    auth_schemas.py
-  router/
-    auth.py
-    tasks.py
-    deps_auth.py
+Create a .env file in the project root (you can copy from .env.example).
 
-tests/
-  conftest.py
-  test_auth.py
-  test_tasks.py
+Example: 
+    DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
+    SECRET_KEY=change_me_to_a_long_random_secret 
 
-alembic/
-Dockerfile
-docker-compose.yml
-requirements.txt
-pytest.ini
-.env
+## Running the Project (Docker)
+1) Start containers
+    docker-compose up --build
 
-Day 1 — Core API & Database Setup
-Features
+2) Apply database migrations
+    docker-compose exec api alembic upgrade head
 
-Task CRUD endpoints
+3) Open Swagger UI
+    http://localhost:8000/docs
 
-Request & response validation with Pydantic
+## Core API & Database Setup
 
-PostgreSQL integration
+- Task CRUD endpoints
+- PostgreSQL integration
+- SQLAlchemy 2.0 ORM models
+- Alembic migrations
+- Swagger UI (`/docs`)
+- Fully Dockerized local environment
 
-SQLAlchemy 2.0 ORM models
+## Example Endpoints
 
-Alembic migrations
+- POST /tasks — create task
+- GET /tasks/ — list tasks
+- GET /tasks/{id} — get task by id
+- PATCH /tasks/{id} — update task
+- DELETE /tasks/{id} — delete task
 
-Swagger UI (/docs)
+---
 
-Fully Dockerized local environment
+## Authentication & Authorization (JWT)
 
-Example Endpoints (Day 1)
+It introduces user authentication, JWT-based authorization, and protected endpoints.
 
-POST /tasks — create task
+### Features
 
-GET /tasks — list tasks
+- User registration (POST /auth/register)
+- User login (POST /auth/login)
+- Password hashing with bcrypt
+- JWT access tokens
+- Protected task routes using Depends(get_current_user)
+- Task ownership (users can access only their own tasks) 
 
-GET /tasks/{id} — get task by id
-
-PATCH /tasks/{id} — update task
-
-DELETE /tasks/{id} — delete task
-
-Day 2 — Authentication & Authorization (JWT)
-
-Day 2 introduces user authentication, JWT-based authorization, and task ownership.
-All task endpoints are protected and scoped to the authenticated user.
-
-Features
-
-User registration (/auth/register)
-
-User login with JWT (/auth/login)
-
-Password hashing with bcrypt
-
-JWT access tokens
-
-Protected routes using Depends
-
-Task ownership enforcement
-
-Centralized authorization logic
-
-Authentication Flow
-
-User registers with email and password
-
-Password is hashed before storing in the database
-
-User logs in and receives a JWT access token
-
-Token is sent via Authorization: Bearer <token> header
-
-Protected endpoints validate the token and resolve current_user
-
-Auth Endpoints
-
-Register user
+### Authentication Endpoints
+### Register user 
 POST /auth/register
+    Content-Type: application/json 
 
-Request body:
 {
-"email": "user@example.com
-",
-"password": "secret123"
+  "email": "user@example.com",
+  "password": "secret123"
 }
 
-Login user
+### Login user
 POST /auth/login
+    Content-Type: application/x-www-form-urlencoded
+
+Form fields:
+
+- username — user email
+- password — user password
 
 Response:
+
 {
-"access_token": "jwt_token_here",
-"token_type": "bearer"
+  "access_token": "jwt_token_here",
+  "token_type": "bearer"
 }
 
-Protected Task Endpoints
+### Swagger Authorization (How to use protected endpoints)
 
-All task endpoints require authentication.
+1) Open Swagger UI
+    http://localhost:8000/docs
 
-Authorization header:
-Authorization: Bearer <access_token>
+2) Call POST /auth/login
+    - Enter username (email)
+    - Enter password
+    - Click Execute
+    - Copy access_token
 
-POST /tasks — create task (owned by current user)
+3) Click Authorize (🔒)
 
-GET /tasks — list own tasks
+4) Paste:
 
-GET /tasks/{id} — get own task
+    Bearer <your_access_token>
 
-PATCH /tasks/{id} — update own task
+5) All protected /tasks endpoints are now accessible.
 
-DELETE /tasks/{id} — delete own task
+---
 
-Security Notes
+## Authentication & Testing
 
-Passwords are never stored in plain text
+- OAuth2 Password Flow (JWT)
+- Centralized `get_current_user` dependency
+- Swagger authorization support
+- Integration tests with pytest
+- Isolated SQLite test database
 
-Password length is validated before hashing (bcrypt 72-byte limit)
-
-JWT tokens are verified on every protected request
-
-Users cannot access or modify tasks owned by others
-
-Day 3 — Authentication (JWT) & Testing
-Overview
-
-Day 3 focuses on hardening authentication and adding automated integration tests.
-The API is now fully testable, isolated, and production-ready from an authentication perspective.
-
-Authentication (JWT)
-Login Flow
-
-Authentication uses OAuth2 Password Flow
-
-Passwords are hashed with bcrypt
-
-On successful login, the API issues a JWT access token
-
-Endpoints
-
-POST /auth/register — register a new user
-
-POST /auth/login — login and receive JWT token
-
-The JWT sub claim stores the user’s email, which is later used to resolve the current user.
-
-Authorization
-Protected Endpoints
-
-All task-related endpoints are protected using a centralized dependency:
-Depends(get_current_user)
-
-Protected endpoints:
-
-POST /tasks
-
-GET /tasks/
-
-GET /tasks/{task_id}
-
-PATCH /tasks/{task_id}
-
-DELETE /tasks/{task_id}
-
-Unauthorized requests return 401 Unauthorized.
-
-Swagger Authorization
-
-Swagger UI supports authentication via the Authorize button.
-
-How to authorize in Swagger
-
-Open Swagger UI:
-http://localhost:8000/docs
-
-Call POST /auth/login
-
-Use form-data
-
-username = email
-
-password = password
-
-Copy the returned access_token
-
-Click Authorize (🔒 icon)
-
-Paste:
-Bearer <your_access_token>
-
-All protected endpoints become accessible
-
-Testing Setup
-Test Stack
-
-pytest
-
-FastAPI TestClient
-
-SQLite (isolated test database)
-
-Tests are located in the tests/ directory and do not use Postgres or Docker.
-
-Key Concepts
-
-dependency_overrides replaces the real database with a test database
-
-Tables are created and dropped automatically per test session
-
-Tests simulate real HTTP requests against the API
-
-Running Tests
+### Running tests
 
 Run tests from the project root:
 
-python -m pytest -q
+    python -m pytest -q
 
 Example output:
-5 passed, 1 warning in 3.9s
 
-Covered Test Cases
-Authentication Tests
+    5 passed, 1 warning in 3.9s
 
-User registration success
+### Covered Test Cases
+**Authentication**
 
-Duplicate email registration → 400
+- User registration success
+- Duplicate email → 400
+- Successful login → JWT token returned
+- Wrong password → 401
+- Unknown user → 401
 
-Successful login → JWT token returned
+**Tasks**
 
-Wrong password → 401
+- Access without token → 401
+- Create task
+- List tasks
+- Get task by ID
+- Update task
+- Delete task
+- Get deleted task → 404
 
-Unknown user → 401
 
-Task Tests
+### Result 
 
-Access without token → 401
+- JWT authentication fully implemented
+- Task endpoints secured
+- Swagger supports authorization
+- Integration tests automated and isolated
+- Production-ready backend foundation
 
-Create task
-
-List tasks
-
-Get task by ID
-
-Update task
-
-Delete task
-
-Get deleted task → 404
-
-Database & Architecture Notes
-
-SQLAlchemy Base is declared separately to avoid circular imports
-
-Models are registered via a dedicated module during test initialization
-
-Test database is fully isolated from production data
-
-Result (End of Day 3)
-
-JWT authentication is fully functional
-
-Task endpoints are properly secured
-
-Swagger supports authorization
-
-Integration tests are automated and isolated
-
-The project has a solid production-ready foundation
+---
