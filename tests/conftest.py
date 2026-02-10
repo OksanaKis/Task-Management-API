@@ -1,7 +1,8 @@
+import os
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app as fastapi_app
@@ -11,13 +12,14 @@ import app.db.base_models  # noqa: F401
 
 app: FastAPI = fastapi_app
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
+# Використовуємо ту ж БД, що й контейнер (tasks_db)
+# Можеш винести в env, але так працює одразу.
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql+psycopg2://postgres:postgres@db:5432/tasks_db",
 )
 
+engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -31,10 +33,19 @@ def override_get_db():
 
 @pytest.fixture(scope="session", autouse=True)
 def prepare_database():
-    Base.metadata.drop_all(bind=engine)
+    # На Postgres таблиці створюються міграціями/metadata.
+    # Для тестів найпростіше: створити таблиці один раз.
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(autouse=True)
+def clean_db():
+    # ВАЖЛИВО: чистимо між тестами, щоб не було витоків стану
+    with engine.begin() as conn:
+        conn.execute(text("TRUNCATE TABLE tasks RESTART IDENTITY CASCADE"))
+        conn.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
 
 
 @pytest.fixture()
