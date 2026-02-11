@@ -215,3 +215,81 @@ Example output:
 - Production-ready backend foundation
 
 ---
+
+## Task Ownership & Authorization
+
+### Goal
+Implement **strict task ownership** with proper authorization rules, database-level constraints, and integration tests.
+
+Only the task owner can:
+- view a task
+- update a task
+- delete a task
+
+---
+
+### Implemented Features
+
+#### 🔐 Task Ownership
+- Each task belongs to a specific user via `user_id`
+- Ownership enforced at:
+  - **Database level** (Foreign Key + CASCADE)
+  - **API level** (403 Forbidden)
+
+sql
+tasks.user_id → users.id (ON DELETE CASCADE) 
+
+### 🚫 Authorization Rules (403 vs 404) 
+| Case                                    | Response        |
+| --------------------------------------- | --------------- |
+| Task does not exist                     | `404 Not Found` |
+| Task exists but belongs to another user | `403 Forbidden` |
+| Task belongs to current user            | ✅ Allowed      |
+
+### 📌 Protected Endpoints
+
+All task endpoints require authentication (JWT):
+- POST /tasks — create task (auto-assigns owner)
+- GET /tasks — list only own tasks
+- GET /tasks/{id} — only if owner
+- PATCH /tasks/{id} — only if owner
+- DELETE /tasks/{id} — only if owner
+
+Example: Ownership Check (API) 
+
+    task = db.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if task.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions") 
+
+### Integration Tests (PostgreSQL)
+
+- Tests run against real PostgreSQL (not SQLite)
+- Database cleaned before each test: 
+
+    TRUNCATE TABLE tasks RESTART IDENTITY CASCADE;
+    TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+- Ensures:
+    - No state leakage between tests
+    - Real FK & CASCADE behavior
+    - Production-like environment
+
+### Ownership Test Coverage
+The API enforces strict resource ownership. Any attempt to access or modify a task owned by another user results in a 403 Forbidden response, while requests for non-existent resources correctly return 404 Not Found.
+
+### Running Tests
+
+    docker compose exec api python -m pytest -q
+
+All tests pass successfully.
+
+### Result
+
+✅ Secure multi-user task isolation
+✅ Clear authorization rules
+✅ Database-level data integrity
+✅ Production-ready test setup
+
+---
