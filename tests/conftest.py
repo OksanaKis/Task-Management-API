@@ -15,7 +15,7 @@ app: FastAPI = fastapi_app
 # Використовуємо ту ж БД, що й контейнер (tasks_db)
 # Можеш винести в env, але так працює одразу.
 TEST_DATABASE_URL = os.getenv(
-    "TEST_DATABASE_URL",
+    "DATABASE_URL",
     "postgresql+psycopg2://postgres:postgres@db:5432/tasks_db",
 )
 
