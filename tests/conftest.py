@@ -1,14 +1,15 @@
 import os
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app as fastapi_app
+import app.db.base_models  # noqa: F401
 from app.db.base import Base
 from app.db.deps import get_db
-import app.db.base_models  # noqa: F401
+from app.main import app as fastapi_app
 
 app: FastAPI = fastapi_app
 

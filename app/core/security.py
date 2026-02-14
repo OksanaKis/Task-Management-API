@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 ALGORITHM = "HS256"

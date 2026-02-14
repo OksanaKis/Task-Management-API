@@ -29,7 +29,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Email already registered") from None
     db.refresh(user)
     return user
 

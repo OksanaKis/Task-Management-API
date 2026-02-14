@@ -1,3 +1,3 @@
 # імпортуємо моделі для реєстрації в Base.metadata
-from app.models.user import User  # noqa: F401
 from app.models.task import Task  # noqa: F401
+from app.models.user import User  # noqa: F401

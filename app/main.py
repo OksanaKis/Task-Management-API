@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from app.router.auth import router as auth_router
 from app.router.tasks import router as tasks_router
 
