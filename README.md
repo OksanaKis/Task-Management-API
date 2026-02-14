@@ -293,3 +293,25 @@ All tests pass successfully.
 ✅ Production-ready test setup
 
 ---
+
+## CI & Reliability
+
+### What was implemented
+- Dockerized PostgreSQL environment
+- Alembic migrations
+- Integration tests with real PostgreSQL
+- Ownership enforcement (403 vs 404)
+- GitHub Actions CI pipeline (runs on every push/PR)
+
+### Run tests locally (Docker)
+```bash
+docker-compose up --build
+docker-compose exec api alembic upgrade head
+docker-compose exec api pytest -q 
+
+CI
+
+Workflow: .github/workflows/ci.yml
+
+Steps: start PostgreSQL → run Alembic migrations → run pytest 
+
