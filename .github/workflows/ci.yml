@@ -26,9 +26,9 @@ jobs:
           --health-retries 10
 
     env:
+      PYTHONPATH: .
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/tasks_db
       SECRET_KEY: ci_test_secret_key
-      PYTHONPATH: .
 
     steps:
       - name: Checkout code
@@ -48,5 +48,5 @@ jobs:
       - name: Run Alembic migrations
         run: alembic upgrade head
 
-      - name: Run tests
-        run: pytest -q
+      - name: Run tests with coverage
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=85
