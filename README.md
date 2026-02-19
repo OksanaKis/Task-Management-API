@@ -164,28 +164,30 @@ Only the task owner can:
   - **Database level** (Foreign Key + CASCADE)
   - **API level** (authorization checks)
 
-SQL
-    tasks.user_id → users.id (ON DELETE CASCADE) 
+```sql
+tasks.user_id → users.id (ON DELETE CASCADE)
 
 ---
 
-### 🚫 Authorization Rules (403 vs 404) 
+### Authorization Rules (403 vs 404) 
 | Case                                    | Response        |
 | --------------------------------------- | --------------- |
 | Task does not exist                     | `404 Not Found` |
 | Task exists but belongs to another user | `403 Forbidden` |
-| Task belongs to current user            | ✅ Allowed      |
+| Task belongs to current user            |   Allowed       |
 
 ---
 
 #### Example: Ownership Check (API) 
 
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+```md
+```python
+task = db.get(Task, task_id)
+if not task:
+    raise HTTPException(status_code=404, detail="Task not found")
 
-    if task.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions") 
+if task.user_id != current_user.id:
+    raise HTTPException(status_code=403, detail="Not enough permissions")
 
 --- 
 
@@ -209,7 +211,9 @@ SQL
 
 ## Run Tests (Docker)
 
-    docker-compose exec api pytest -q 
+```md
+```bash
+docker-compose exec api pytest -q
 
 --- 
 
