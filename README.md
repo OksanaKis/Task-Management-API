@@ -31,7 +31,7 @@ production-ready API design, authentication, authorization, testing, and CI prac
 
 ## Project Structure
 
-'''
+```
 
  TASK-MANAGEMENT-API/
 ├── app/
@@ -71,7 +71,7 @@ production-ready API design, authentication, authorization, testing, and CI prac
 ├── alembic.ini
 └── README.md 
 
-''' 
+```
 
 ---
 
