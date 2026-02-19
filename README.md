@@ -89,12 +89,14 @@ Example:
 ```env
 DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
 SECRET_KEY=change_me_to_a_long_random_secret
+``` 
 
 ## Running the Project (Docker)
 
 1. Start containers
 ```bash
 docker-compose up --build
+``` 
 
 2) Apply database migrations
 docker-compose exec api alembic upgrade head
@@ -168,6 +170,7 @@ Only the task owner can:
 
 ```sql
 tasks.user_id → users.id (ON DELETE CASCADE)
+```
 
 ---
 
@@ -189,6 +192,7 @@ if not task:
 
 if task.user_id != current_user.id:
     raise HTTPException(status_code=403, detail="Not enough permissions")
+``` 
 
 --- 
 
@@ -214,6 +218,7 @@ if task.user_id != current_user.id:
 
 ```bash
 docker-compose exec api pytest -q
+```
 
 --- 
 
