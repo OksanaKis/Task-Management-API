@@ -90,8 +90,11 @@ Example:
 DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
 SECRET_KEY=change_me_to_a_long_random_secret
 
+```md
 ## Running the Project (Docker)
-1) Start containers
+
+1. Start containers
+```bash
 docker-compose up --build
 
 2) Apply database migrations
@@ -164,6 +167,7 @@ Only the task owner can:
   - **Database level** (Foreign Key + CASCADE)
   - **API level** (authorization checks)
 
+```md
 ```sql
 tasks.user_id → users.id (ON DELETE CASCADE)
 
@@ -209,9 +213,9 @@ if task.user_id != current_user.id:
 
 --- 
 
+```md
 ## Run Tests (Docker)
 
-```md
 ```bash
 docker-compose exec api pytest -q
 
