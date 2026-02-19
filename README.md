@@ -31,7 +31,9 @@ production-ready API design, authentication, authorization, testing, and CI prac
 
 ## Project Structure
 
-TASK-MANAGEMENT-API/
+'''
+
+ TASK-MANAGEMENT-API/
 ├── app/
 │   ├── main.py
 │   ├── core/
@@ -67,7 +69,9 @@ TASK-MANAGEMENT-API/
 ├── .env
 ├── .env.example
 ├── alembic.ini
-└── README.md
+└── README.md 
+
+''' 
 
 ---
 
