@@ -90,7 +90,6 @@ Example:
 DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
 SECRET_KEY=change_me_to_a_long_random_secret
 
-```md
 ## Running the Project (Docker)
 
 1. Start containers
@@ -167,7 +166,6 @@ Only the task owner can:
   - **Database level** (Foreign Key + CASCADE)
   - **API level** (authorization checks)
 
-```md
 ```sql
 tasks.user_id → users.id (ON DELETE CASCADE)
 
@@ -184,7 +182,6 @@ tasks.user_id → users.id (ON DELETE CASCADE)
 
 #### Example: Ownership Check (API) 
 
-```md
 ```python
 task = db.get(Task, task_id)
 if not task:
@@ -213,7 +210,6 @@ if task.user_id != current_user.id:
 
 --- 
 
-```md
 ## Run Tests (Docker)
 
 ```bash
