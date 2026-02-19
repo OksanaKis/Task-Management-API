@@ -84,19 +84,21 @@ production-ready API design, authentication, authorization, testing, and CI prac
 
 Create a `.env` file in the project root (you can copy from `.env.example`).
 
-Example: 
-    DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
-    SECRET_KEY=change_me_to_a_long_random_secret 
+Example:
+
+```env
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
+SECRET_KEY=change_me_to_a_long_random_secret
 
 ## Running the Project (Docker)
 1) Start containers
-    docker-compose up --build
+docker-compose up --build
 
 2) Apply database migrations
-    docker-compose exec api alembic upgrade head
+docker-compose exec api alembic upgrade head
 
 3) Open Swagger UI
-    http://localhost:8000/docs
+http://localhost:8000/docs
 
 ## Core API & Database Setup
 
