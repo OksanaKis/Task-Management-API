@@ -31,7 +31,9 @@ production-ready API design, authentication, authorization, testing, and CI prac
 
 ## Project Structure
 
-TASK-MANAGEMENT-API/
+```
+
+ TASK-MANAGEMENT-API/
 ├── app/
 │   ├── main.py
 │   ├── core/
@@ -67,7 +69,9 @@ TASK-MANAGEMENT-API/
 ├── .env
 ├── .env.example
 ├── alembic.ini
-└── README.md
+└── README.md 
+
+```
 
 ---
 
@@ -80,19 +84,25 @@ TASK-MANAGEMENT-API/
 
 Create a `.env` file in the project root (you can copy from `.env.example`).
 
-Example: 
-    DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
-    SECRET_KEY=change_me_to_a_long_random_secret 
+Example:
+
+```env
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
+SECRET_KEY=change_me_to_a_long_random_secret
+``` 
 
 ## Running the Project (Docker)
-1) Start containers
-    docker-compose up --build
+
+1. Start containers
+```bash
+docker-compose up --build
+``` 
 
 2) Apply database migrations
-    docker-compose exec api alembic upgrade head
+docker-compose exec api alembic upgrade head
 
 3) Open Swagger UI
-    http://localhost:8000/docs
+http://localhost:8000/docs
 
 ## Core API & Database Setup
 
@@ -158,28 +168,31 @@ Only the task owner can:
   - **Database level** (Foreign Key + CASCADE)
   - **API level** (authorization checks)
 
-SQL
-    tasks.user_id → users.id (ON DELETE CASCADE) 
+```sql
+tasks.user_id → users.id (ON DELETE CASCADE)
+```
 
 ---
 
-### 🚫 Authorization Rules (403 vs 404) 
+### Authorization Rules (403 vs 404) 
 | Case                                    | Response        |
 | --------------------------------------- | --------------- |
 | Task does not exist                     | `404 Not Found` |
 | Task exists but belongs to another user | `403 Forbidden` |
-| Task belongs to current user            | ✅ Allowed      |
+| Task belongs to current user            |   Allowed       |
 
 ---
 
 #### Example: Ownership Check (API) 
 
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+```python
+task = db.get(Task, task_id)
+if not task:
+    raise HTTPException(status_code=404, detail="Task not found")
 
-    if task.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions") 
+if task.user_id != current_user.id:
+    raise HTTPException(status_code=403, detail="Not enough permissions")
+``` 
 
 --- 
 
@@ -203,7 +216,9 @@ SQL
 
 ## Run Tests (Docker)
 
-    docker-compose exec api pytest -q 
+```bash
+docker-compose exec api pytest -q
+```
 
 --- 
 
